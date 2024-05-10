@@ -1,0 +1,154 @@
+<template>
+    <div class="container">
+      <!-- Search bar -->
+      <div>
+        <div class="row mb-4">
+          <div class="col-md-5">
+            <input type="text" class="form-control" placeholder="Search by product name" v-model="searchQuery">
+          </div>
+          <div class="col-md-7">
+            <div class="form-inline">
+              <label class="mr-2">Price Range:</label>
+              <input type="number" class="form-control mr-2" placeholder="Min" v-model.number="minPrice">
+              <input type="number" class="form-control" placeholder="Max" v-model.number="maxPrice">
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Display filtered products as cards -->
+      <div class="row">
+        <div class="col-md-4 mb-4" v-for="product in paginatedFilteredProducts" :key="product.id">
+          <router-link :to="'/products/' + product.id">
+            <div class="card">
+              <!-- Assuming 'photo' is the path to the image -->
+              <img :src="product.images" class="card-img-top" alt="Product Image">
+              <div class="card-body">
+                <h5 class="card-title">{{ product.name }}</h5>
+                <p class="card-text">{{ truncateDescription(product.description) }}</p>
+                <p class="card-text"><strong>Price:</strong> {{ product.price }}</p>
+              </div>
+            </div>
+          </router-link>
+        </div>
+      </div>
+   
+  
+      <!-- Pagination controls for filtered products -->
+      <nav aria-label="Page navigation example">
+        <ul class="pagination">
+          <li class="page-item" :class="{ disabled: currentPage === 1 }">
+            <button class="page-link" @click="previousPage">Previous</button>
+          </li>
+          <li class="page-item" v-for="page in totalFilteredPages" :key="page" :class="{ active: page === currentPage }">
+            <button class="page-link" @click="goToPage(page)">{{ page }}</button>
+          </li>
+          <li class="page-item" :class="{ disabled: currentPage === totalFilteredPages }">
+            <button class="page-link" @click="nextPage">Next</button>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </template>
+  
+  <script>
+  import { ref, computed } from "vue";
+  import axios from 'axios';
+  
+  export default {
+    setup() {
+      const products = ref([]);
+      const searchQuery = ref('');
+      const minPrice = ref(null);
+      const maxPrice = ref(null);
+      const currentPage = ref(1); // Variable to store the current page
+      const pageSize = 6;
+  
+      const fetchProducts = async () => {
+        try {
+          const response = await axios.get('/api/products');
+          products.value = response.data;
+        } catch (error) {
+          console.error("Error fetching products:", error);
+        }
+      };
+  
+      fetchProducts();
+  
+      const filteredProducts = computed(() => {
+        let filtered = products.value;
+  
+        // Filter by search query
+        if (searchQuery.value.trim() !== '') {
+          const query = searchQuery.value.trim().toLowerCase();
+          filtered = filtered.filter(product => product.name.toLowerCase().includes(query));
+        }
+  
+        // Filter by price range
+        if (minPrice.value !== null) {
+          filtered = filtered.filter(product => product.price >= minPrice.value);
+        }
+        if (maxPrice.value !== null) {
+          filtered = filtered.filter(product => product.price <= maxPrice.value);
+        }
+  
+        return filtered;
+      });
+  
+      const totalFilteredPages = computed(() => Math.ceil(filteredProducts.value.length / pageSize));
+  
+      const paginatedFilteredProducts = computed(() => {
+        const startIndex = (currentPage.value - 1) * pageSize;
+        const endIndex = startIndex + pageSize;
+        return filteredProducts.value.slice(startIndex, endIndex);
+      });
+  
+      function goToPage(page) {
+        currentPage.value = page;
+      }
+  
+      function nextPage() {
+        if (currentPage.value < totalFilteredPages.value) {
+          currentPage.value++;
+        }
+      }
+  
+      function previousPage() {
+        if (currentPage.value > 1) {
+          currentPage.value--;
+        }
+      }
+  
+      // const truncateDescription = (description) => {
+      //   if (description.split(' ').length > 150) {
+      //     return description.split(' ').slice(0, 150).join(' ') + '...';
+      //   }
+      //   return description;
+      // };
+
+      return {
+        searchQuery,
+        minPrice,
+        maxPrice,
+        paginatedFilteredProducts,
+        currentPage,
+        totalFilteredPages,
+        goToPage,
+        nextPage,
+        previousPage,
+        // truncateDescription
+      };
+    },
+    methods: {
+    truncateDescription(description) {
+        const maxLength = 70; // Define the maximum length you want to display
+        if (description.length > maxLength) {
+          return description.slice(0, maxLength) + '...'; // Truncate the description
+        } else {
+          return description; // Return the original description if it's shorter than the maximum length
+        }
+      },
+    }
+  };
+  </script>
+  
