@@ -1,7 +1,7 @@
 <template>
   <nav class="navbar navbar-expand-sm bg-white navbar-dark" style="box-shadow: inset #b3923361 0px 0px 15px;">
     <router-link class="navbar-brand" :to="{ name: 'Dashboard' }">
-      <img src="/images/logo.png" alt="Logo" style="height: 70px;">
+      <!-- <img src="/images/logo.png" alt="Logo" style="height: 70px;"> -->
     </router-link>
     <div class="d-flex w-75 justify-content-end">
       <ul v-if="$store.getters.getToken" class="navbar-nav">
