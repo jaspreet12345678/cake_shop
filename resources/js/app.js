@@ -6,11 +6,11 @@ import store from './store'
 
 import App from './layouts/App.vue'
 
-import ToastPlugin from 'vue-toast-notification';
-import 'vue-toast-notification/dist/theme-bootstrap.css';
+// import ToastPlugin from 'vue-toast-notification';
+// import 'vue-toast-notification/dist/theme-bootstrap.css';
 
 createApp(App)
-    .use(ToastPlugin)
+    // .use(ToastPlugin)
     .use(router)
     .use(store)
     .mount("#app")

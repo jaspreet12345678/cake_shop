@@ -52,8 +52,8 @@
 import { ref, computed } from 'vue';
 import { useStore } from 'vuex';
 import axios from 'axios';
-import {useToast} from 'vue-toast-notification';
-import 'vue-toast-notification/dist/theme-sugar.css';
+// import {useToast} from 'vue-toast-notification';
+// import 'vue-toast-notification/dist/theme-sugar.css';
 import { Swiper, SwiperSlide } from 'swiper/vue';
 
 // Import Swiper styles
@@ -83,16 +83,16 @@ export default {
   },
   methods: {
     addToCart(product){
-      const toast = useToast();
+      // const toast = useToast();
       const isExisting = this.store.getters.cartItems.some(item => item.id === product.id);
 
       if (!isExisting) {
         // If the product is not already in the cart, add it
         this.store.dispatch('addToCart', product);
-        toast.success('Product added to cart'); // Show success toast
+        // toast.success('Product added to cart'); // Show success toast
       } else {
         // If the product is already in the cart, display a message
-        toast.warning('Product is already in the cart');
+        // toast.warning('Product is already in the cart');
       }
     },
     async fetchProducts() {

@@ -22,7 +22,6 @@
         "vue-loader": "^17.0.0",
         "vue-router": "^4.0.13",
         "vue-toast-notification": "^3.1.2",
-        "vue-toastification": "^1.7.14",
         "vuex": "^4.0.2"
     }
 }
